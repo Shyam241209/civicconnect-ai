@@ -1,0 +1,4 @@
+project_id = "mqionxnvdnnhxvkqmfvw"
+
+[functions.analyze-civic-issue]
+verify_jwt = false
