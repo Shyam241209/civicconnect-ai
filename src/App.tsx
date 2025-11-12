@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Report from "./pages/Report";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
+import HowItWorks from "./pages/HowItWorks";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/report" element={<Report />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/auth" element={<Auth />} />

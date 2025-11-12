@@ -1,15 +1,16 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, FileText, Shield, TrendingUp, Landmark, Users, Target } from "lucide-react";
+import { FileText, TrendingUp, Landmark, Users, Target, Award, Sparkles, ArrowRight, Shield, AlertCircle } from "lucide-react";
 import heroImage from "@/assets/india-civic-hero.jpg";
+import { Navigation } from "@/components/Navigation";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
       {/* Hero Section with Background */}
-      <section className="relative overflow-hidden min-h-[90vh] flex items-center">
+      <section className="relative overflow-hidden min-h-[90vh] flex items-center pt-20">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -91,54 +92,60 @@ const Index = () => {
       <section className="py-20 px-4 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-4">
-              SIMPLE & EFFECTIVE
+            <div className="inline-block bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              WHY CHOOSE CIVICAI
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">How It Works</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Built for Modern India</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Three simple steps to contribute to a cleaner, better India
+              Experience the future of civic engagement with cutting-edge technology
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="group border-2 hover:border-primary hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-gradient-to-br from-card to-primary/5">
-              <CardHeader className="pb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <AlertCircle className="w-8 h-8 text-primary-foreground" />
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <Card className="group border-2 hover:border-primary hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-card">
+              <CardHeader className="pb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
+                  <Sparkles className="w-8 h-8 text-primary-foreground" />
                 </div>
-                <div className="text-6xl font-bold text-primary/20 mb-2">01</div>
-                <CardTitle className="text-2xl mb-3">Report Issue</CardTitle>
+                <CardTitle className="text-2xl mb-3">AI-Powered</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  Take a photo or describe the civic issue. Our AI analyzes it instantly to understand the problem.
+                  Advanced machine learning analyzes every report instantly, ensuring accurate categorization and smart routing.
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="group border-2 hover:border-accent hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-gradient-to-br from-card to-accent/5">
-              <CardHeader className="pb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-accent to-accent/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <TrendingUp className="w-8 h-8 text-accent-foreground" />
+            <Card className="group border-2 hover:border-accent hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-card">
+              <CardHeader className="pb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-accent to-accent/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
+                  <Award className="w-8 h-8 text-accent-foreground" />
                 </div>
-                <div className="text-6xl font-bold text-accent/20 mb-2">02</div>
-                <CardTitle className="text-2xl mb-3">AI Analysis</CardTitle>
+                <CardTitle className="text-2xl mb-3">Fast Resolution</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  Advanced AI categorizes, prioritizes, and routes your report to the right department automatically.
+                  Issues get resolved 3x faster with automated department routing and priority-based workflows.
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="group border-2 hover:border-warning hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-gradient-to-br from-card to-warning/5">
-              <CardHeader className="pb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-warning to-warning/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <FileText className="w-8 h-8 text-warning-foreground" />
+            <Card className="group border-2 hover:border-warning hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-card">
+              <CardHeader className="pb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-warning to-warning/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
+                  <Users className="w-8 h-8 text-warning-foreground" />
                 </div>
-                <div className="text-6xl font-bold text-warning/20 mb-2">03</div>
-                <CardTitle className="text-2xl mb-3">Track Progress</CardTitle>
+                <CardTitle className="text-2xl mb-3">Community First</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  Real-time updates on resolution status. See your contribution making India better.
+                  Built by Indians, for Indians. Join millions making their communities cleaner and safer every day.
                 </CardDescription>
               </CardHeader>
             </Card>
+          </div>
+
+          <div className="text-center">
+            <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6">
+              <Link to="/how-it-works">
+                Learn How It Works
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
