@@ -7,12 +7,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Upload, MapPin, Camera, FileText, Zap } from "lucide-react";
+import { Loader2, Upload, MapPin, Camera, FileText, Zap, AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { Navigation } from "@/components/Navigation";
 import subpageBg from "@/assets/subpage-bg.jpg";
 
 interface AnalysisResult {
+  is_valid_civic_issue: boolean;
+  validation_message: string;
   issue_category: string;
   severity: string;
   priority_level: string;
@@ -22,6 +25,7 @@ interface AnalysisResult {
   estimated_resolution_time: string;
   recommended_action: string;
   ai_confidence_score: number;
+  detected_objects?: string[];
 }
 
 const Report = () => {
@@ -32,22 +36,95 @@ const Report = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isInvalidImage, setIsInvalidImage] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImage(file);
+      setIsInvalidImage(false);
+      setAnalysisResult(null);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+      
+      // Auto-analyze the image immediately
+      toast({
+        title: "Processing Image",
+        description: "AI is analyzing your photo...",
+      });
+      await analyzeImage(file);
     }
   };
 
-  const handleAnalyze = async () => {
+  const analyzeImage = async (imageFile: File) => {
+    setIsAnalyzing(true);
+    
+    try {
+      // Upload image first
+      const fileExt = imageFile.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("civic-reports")
+        .upload(fileName, imageFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("civic-reports")
+        .getPublicUrl(fileName);
+
+      // Call AI analysis
+      const { data, error } = await supabase.functions.invoke("analyze-civic-issue", {
+        body: {
+          imageUrl: publicUrl,
+          description: description || null,
+          locationData: location ? { address: location } : null,
+        },
+      });
+
+      if (error) throw error;
+
+      // Check if it's a valid civic issue
+      if (!data.is_valid_civic_issue) {
+        setIsInvalidImage(true);
+        toast({
+          title: "Invalid Civic Issue",
+          description: data.validation_message,
+          variant: "destructive",
+        });
+        setAnalysisResult(null);
+      } else {
+        setIsInvalidImage(false);
+        setAnalysisResult(data);
+        
+        // Auto-fill description if empty
+        if (!description && data.short_description) {
+          setDescription(data.short_description);
+        }
+        
+        toast({
+          title: "Analysis Complete",
+          description: `Detected: ${data.issue_category}. Please confirm details.`,
+        });
+      }
+    } catch (error) {
+      console.error("Error analyzing image:", error);
+      toast({
+        title: "Analysis Failed",
+        description: "Failed to analyze the image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleReanalyze = async () => {
     if (!image && !description) {
       toast({
         title: "Missing Information",
@@ -57,76 +134,20 @@ const Report = () => {
       return;
     }
 
-    setIsAnalyzing(true);
-
-    try {
-      let imageUrl = "";
-
-      // Upload image if provided
-      if (image) {
-        const fileExt = image.name.split(".").pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("civic-reports")
-          .upload(fileName, image);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from("civic-reports")
-          .getPublicUrl(fileName);
-
-        imageUrl = publicUrl;
-      }
-
-      // Call AI analysis edge function
-      const { data, error } = await supabase.functions.invoke("analyze-civic-issue", {
-        body: {
-          imageUrl,
-          description,
-          locationData: location ? { address: location } : null,
-        },
-      });
-
-      if (error) {
-        if (error.message.includes("429")) {
-          toast({
-            title: "Rate Limit Exceeded",
-            description: "Too many requests. Please try again later.",
-            variant: "destructive",
-          });
-          return;
-        }
-        if (error.message.includes("402")) {
-          toast({
-            title: "Credits Exhausted",
-            description: "AI analysis credits exhausted. Please add credits.",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw error;
-      }
-
-      setAnalysisResult(data);
-      toast({
-        title: "Analysis Complete",
-        description: "AI has successfully analyzed your report",
-      });
-    } catch (error) {
-      console.error("Error analyzing issue:", error);
-      toast({
-        title: "Analysis Failed",
-        description: "Failed to analyze the issue. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
+    if (image) {
+      await analyzeImage(image);
     }
   };
 
   const handleSaveReport = async () => {
-    if (!analysisResult) return;
+    if (!analysisResult || !analysisResult.is_valid_civic_issue) {
+      toast({
+        title: "Cannot Submit",
+        description: "Please upload a valid civic issue image",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsSaving(true);
 
@@ -165,7 +186,15 @@ const Report = () => {
         image_url: imageUrl,
         user_description: description,
         location_data: location ? { address: location } : null,
-        ...analysisResult,
+        issue_category: analysisResult.issue_category,
+        severity: analysisResult.severity,
+        priority_level: analysisResult.priority_level,
+        short_description: analysisResult.short_description,
+        suggested_department: analysisResult.suggested_department,
+        context_analysis: analysisResult.context_analysis,
+        estimated_resolution_time: analysisResult.estimated_resolution_time,
+        recommended_action: analysisResult.recommended_action,
+        ai_confidence_score: analysisResult.ai_confidence_score,
       });
 
       if (insertError) throw insertError;
@@ -213,48 +242,63 @@ const Report = () => {
           </div>
 
           {/* Progress Indicators */}
-          {!analysisResult && (
-            <div className="grid md:grid-cols-3 gap-4 mb-8">
-              <Card className="border-2 border-primary bg-primary/5">
-                <CardContent className="pt-6 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                      <Camera className="w-5 h-5 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">1. Capture</h3>
-                      <p className="text-sm text-muted-foreground">Upload photo & details</p>
-                    </div>
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            <Card className={`border-2 ${!analysisResult ? 'border-primary bg-primary/5' : 'border-border'}`}>
+              <CardContent className="pt-6 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${!analysisResult ? 'bg-primary' : 'bg-muted'}`}>
+                    <Camera className={`w-5 h-5 ${!analysisResult ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
                   </div>
-                </CardContent>
-              </Card>
-              <Card className="border-2">
-                <CardContent className="pt-6 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                      <Zap className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-muted-foreground">2. Analyze</h3>
-                      <p className="text-sm text-muted-foreground">AI processes report</p>
-                    </div>
+                  <div>
+                    <h3 className={`font-semibold ${!analysisResult ? '' : 'text-muted-foreground'}`}>1. Capture</h3>
+                    <p className="text-sm text-muted-foreground">Upload photo</p>
                   </div>
-                </CardContent>
-              </Card>
-              <Card className="border-2">
-                <CardContent className="pt-6 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-muted-foreground">3. Submit</h3>
-                      <p className="text-sm text-muted-foreground">Save & track progress</p>
-                    </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className={`border-2 ${isAnalyzing ? 'border-primary bg-primary/5' : 'border-border'}`}>
+              <CardContent className="pt-6 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isAnalyzing ? 'bg-primary' : 'bg-muted'}`}>
+                    <Zap className={`w-5 h-5 ${isAnalyzing ? 'text-primary-foreground animate-pulse' : 'text-muted-foreground'}`} />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <div>
+                    <h3 className={`font-semibold ${isAnalyzing ? '' : 'text-muted-foreground'}`}>2. AI Analysis</h3>
+                    <p className="text-sm text-muted-foreground">{isAnalyzing ? 'Processing...' : 'Auto-detect issue'}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className={`border-2 ${analysisResult?.is_valid_civic_issue ? 'border-primary bg-primary/5' : 'border-border'}`}>
+              <CardContent className="pt-6 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${analysisResult?.is_valid_civic_issue ? 'bg-primary' : 'bg-muted'}`}>
+                    <FileText className={`w-5 h-5 ${analysisResult?.is_valid_civic_issue ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold ${analysisResult?.is_valid_civic_issue ? '' : 'text-muted-foreground'}`}>3. Confirm</h3>
+                    <p className="text-sm text-muted-foreground">Review & submit</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Invalid Image Warning */}
+          {isInvalidImage && (
+            <Card className="mb-6 border-2 border-destructive bg-destructive/5">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold text-destructive mb-1">Invalid Civic Issue Photo</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {analysisResult?.validation_message || "This photo does not appear to show a valid civic issue. Please upload a relevant image showing infrastructure problems, waste, damage, or other civic concerns."}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           <Card className="mb-6 border-2 shadow-xl">
@@ -312,9 +356,12 @@ const Report = () => {
               <Label htmlFor="description" className="text-base font-semibold flex items-center gap-2">
                 <FileText className="w-4 h-4" />
                 Issue Description
+                {analysisResult?.is_valid_civic_issue && (
+                  <span className="text-xs font-normal text-muted-foreground">(Auto-filled by AI)</span>
+                )}
               </Label>
               <p className="text-sm text-muted-foreground mt-1 mb-2">
-                Describe what you're seeing and why it's a problem
+                AI has detected the issue. You can modify the description if needed.
               </p>
               <Textarea
                 id="description"
@@ -324,6 +371,16 @@ const Report = () => {
                 disabled={isAnalyzing}
                 className="mt-2 min-h-32"
               />
+              {analysisResult?.detected_objects && analysisResult.detected_objects.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="text-xs text-muted-foreground">Detected:</span>
+                  {analysisResult.detected_objects.map((obj, idx) => (
+                    <Badge key={idx} variant="secondary" className="text-xs">
+                      {obj}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>
@@ -347,33 +404,45 @@ const Report = () => {
               </div>
             </div>
 
-            <Button
-              onClick={handleAnalyze}
-              disabled={isAnalyzing || (!image && !description)}
-              className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-              size="lg"
-            >
-              {isAnalyzing ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  <span className="text-lg">AI is Analyzing Your Report...</span>
-                </>
-              ) : (
-                <>
-                  <Zap className="w-5 h-5 mr-2" />
-                  <span className="text-lg">Analyze with AI</span>
-                </>
-              )}
-            </Button>
+            {analysisResult && !analysisResult.is_valid_civic_issue && (
+              <Button
+                onClick={handleReanalyze}
+                disabled={isAnalyzing || !image}
+                variant="outline"
+                className="w-full"
+                size="lg"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    <span className="text-lg">Re-analyzing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-5 h-5 mr-2" />
+                    <span className="text-lg">Try Different Photo</span>
+                  </>
+                )}
+              </Button>
+            )}
           </CardContent>
         </Card>
 
-        {analysisResult && (
+        {analysisResult && analysisResult.is_valid_civic_issue && (
           <>
             <AnalysisResults result={analysisResult} />
             <div className="mt-6">
-              <Card className="border-2 border-success/20 bg-success/5">
-                <CardContent className="pt-6">
+              <Card className="border-2 border-primary/20 bg-primary/5">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="flex items-start gap-3 p-4 bg-background/50 rounded-lg border">
+                    <AlertCircle className="w-5 h-5 text-primary mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold mb-1">Please Confirm Details</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Review the AI-detected information above. You can edit the description if needed before submitting.
+                      </p>
+                    </div>
+                  </div>
                   <Button onClick={handleSaveReport} disabled={isSaving} size="lg" className="w-full">
                     {isSaving ? (
                       <>
@@ -383,7 +452,7 @@ const Report = () => {
                     ) : (
                       <>
                         <FileText className="w-5 h-5 mr-2" />
-                        <span className="text-lg">Save & Submit Report</span>
+                        <span className="text-lg">Confirm & Submit Report</span>
                       </>
                     )}
                   </Button>
