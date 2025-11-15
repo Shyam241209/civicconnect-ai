@@ -3,11 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, TrendingUp, FileText, Camera, Brain, Zap, Shield, Users, ChevronRight } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
+import accentBg from "@/assets/accent-bg.jpg";
 
 const HowItWorks = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0">
+        <img src={accentBg} alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-background/90 backdrop-blur-sm" />
+      </div>
+      <div className="relative z-10">
+        <Navigation />
       
       <div className="pt-24 pb-20 px-4">
         {/* Hero Section */}
@@ -224,6 +230,7 @@ const HowItWorks = () => {
             </CardContent>
           </Card>
         </section>
+      </div>
       </div>
     </div>
   );

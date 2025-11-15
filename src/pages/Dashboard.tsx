@@ -9,6 +9,7 @@ import { Loader2, Calendar, MapPin, Filter, Search, TrendingUp } from "lucide-re
 import { format } from "date-fns";
 import { Navigation } from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
+import dashboardBg from "@/assets/dashboard-bg.jpg";
 
 interface Report {
   id: string;
@@ -111,8 +112,13 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0">
+        <img src={dashboardBg} alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
+      </div>
+      <div className="relative z-10">
+        <Navigation />
       
       <div className="pt-24 pb-12 px-4">
         <div className="max-w-7xl mx-auto">
@@ -326,6 +332,7 @@ const Dashboard = () => {
           </div>
         )}
         </div>
+      </div>
       </div>
     </div>
   );

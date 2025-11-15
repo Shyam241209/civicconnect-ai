@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Upload, MapPin, Camera, FileText, Zap } from "lucide-react";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { Navigation } from "@/components/Navigation";
+import subpageBg from "@/assets/subpage-bg.jpg";
 
 interface AnalysisResult {
   issue_category: string;
@@ -188,8 +189,13 @@ const Report = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0">
+        <img src={subpageBg} alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+      </div>
+      <div className="relative z-10">
+        <Navigation />
       
       <div className="pt-24 pb-12 px-4">
         <div className="max-w-5xl mx-auto">
@@ -387,6 +393,7 @@ const Report = () => {
           </>
         )}
         </div>
+      </div>
       </div>
     </div>
   );

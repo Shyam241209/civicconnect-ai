@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Flag, Home, FileText, LayoutDashboard, Info, LogIn } from "lucide-react";
+import { Flag, Home, FileText, LayoutDashboard, Info } from "lucide-react";
+import { LanguageSelector } from "./LanguageSelector";
 
 export const Navigation = () => {
   const location = useLocation();
@@ -58,24 +59,14 @@ export const Navigation = () => {
                 Dashboard
               </Link>
             </Button>
-            <Button 
-              variant={isActive("/auth") ? "secondary" : "outline"} 
-              asChild
-            >
-              <Link to="/auth">
-                <LogIn className="w-4 h-4 mr-2" />
-                Sign In
-              </Link>
-            </Button>
+            <LanguageSelector />
           </div>
           
           {/* Mobile Menu */}
           <div className="md:hidden flex items-center gap-2">
+            <LanguageSelector />
             <Button size="sm" variant="outline" asChild>
               <Link to="/report">Report</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link to="/auth">Sign In</Link>
             </Button>
           </div>
         </div>
