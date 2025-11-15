@@ -4,6 +4,8 @@ import { AlertCircle, Clock, TrendingUp, Building, CheckCircle } from "lucide-re
 
 interface AnalysisResultsProps {
   result: {
+    is_valid_civic_issue: boolean;
+    validation_message: string;
     issue_category: string;
     severity: string;
     priority_level: string;
@@ -13,6 +15,7 @@ interface AnalysisResultsProps {
     estimated_resolution_time: string;
     recommended_action: string;
     ai_confidence_score: number;
+    detected_objects?: string[];
   };
 }
 
