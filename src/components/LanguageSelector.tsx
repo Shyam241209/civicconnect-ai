@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Globe } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Select,
   SelectContent,
@@ -32,7 +32,7 @@ const INDIAN_LANGUAGES = [
 ];
 
 export const LanguageSelector = () => {
-  const [language, setLanguage] = useState("en");
+  const { language, setLanguage } = useLanguage();
 
   return (
     <div className="flex items-center gap-2">

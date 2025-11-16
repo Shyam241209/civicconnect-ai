@@ -2,9 +2,13 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Flag, Home, FileText, LayoutDashboard, Info } from "lucide-react";
 import { LanguageSelector } from "./LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getTranslation } from "@/lib/translations";
 
 export const Navigation = () => {
   const location = useLocation();
+  const { language } = useLanguage();
+  const t = (key: string) => getTranslation(language, key);
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -29,7 +33,7 @@ export const Navigation = () => {
             >
               <Link to="/">
                 <Home className="w-4 h-4 mr-2" />
-                Home
+                {t("home")}
               </Link>
             </Button>
             <Button 
@@ -38,7 +42,7 @@ export const Navigation = () => {
             >
               <Link to="/how-it-works">
                 <Info className="w-4 h-4 mr-2" />
-                How It Works
+                {t("howItWorks")}
               </Link>
             </Button>
             <Button 
@@ -47,7 +51,7 @@ export const Navigation = () => {
             >
               <Link to="/report">
                 <FileText className="w-4 h-4 mr-2" />
-                Report Issue
+                {t("reportIssue")}
               </Link>
             </Button>
             <Button 
@@ -56,7 +60,7 @@ export const Navigation = () => {
             >
               <Link to="/dashboard">
                 <LayoutDashboard className="w-4 h-4 mr-2" />
-                Dashboard
+                {t("viewDashboard")}
               </Link>
             </Button>
             <LanguageSelector />
@@ -66,7 +70,7 @@ export const Navigation = () => {
           <div className="md:hidden flex items-center gap-2">
             <LanguageSelector />
             <Button size="sm" variant="outline" asChild>
-              <Link to="/report">Report</Link>
+              <Link to="/report">{t("reportIssue")}</Link>
             </Button>
           </div>
         </div>

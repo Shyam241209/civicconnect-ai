@@ -1,0 +1,188 @@
+export const translations: Record<string, Record<string, string>> = {
+  en: {
+    // Navigation
+    home: "Home",
+    howItWorks: "How It Works",
+    reportIssue: "Report Issue",
+    viewDashboard: "View Dashboard",
+    
+    // Hero Section
+    heroTitle: "स्वच्छ भारत Clean India",
+    heroSubtitle: "Empowering Citizens, Transforming Cities",
+    heroDescription: "Your voice matters. Report civic issues with AI-powered analysis for faster resolution and a cleaner, better India.",
+    activeCitizens: "Active Citizens",
+    issuesResolved: "Issues Resolved",
+    
+    // Features
+    featuresTitle: "How We Transform Communities",
+    aiPoweredTitle: "AI-Powered",
+    aiPoweredDesc: "Advanced AI instantly analyzes and categorizes your civic reports",
+    fastResolutionTitle: "Fast Resolution",
+    fastResolutionDesc: "Smart routing ensures issues reach the right authorities quickly",
+    communityFirstTitle: "Community First",
+    communityFirstDesc: "Track progress and see real impact in your neighborhood",
+    learnHowItWorks: "Learn How It Works",
+    
+    // Impact Stats
+    impactTitle: "Real Impact, Real Numbers",
+    aiAccuracy: "AI Accuracy Rate",
+    fasterResolution: "Faster Resolution",
+    alwaysAvailable: "Always Available",
+    
+    // CTA
+    ctaTitle: "Ready to Build a Better India?",
+    ctaDescription: "Join thousands of citizens making a difference. Report issues, track progress, and see real change in your community.",
+    
+    // Report Page
+    reportTitle: "Report Civic Issue",
+    capturePhoto: "Capture Photo",
+    aiAnalysis: "AI Analysis",
+    confirmSubmit: "Confirm & Submit",
+    uploadPhoto: "Upload Photo",
+    dragDropPhoto: "Drag and drop an image, or click to select",
+    analyzing: "Analyzing image...",
+    reanalyze: "Re-analyze Image",
+    invalidImageWarning: "Invalid Civic Issue Photo",
+    description: "Description",
+    descriptionPlaceholder: "Describe the civic issue in detail...",
+    autoFilledByAI: "Auto-filled by AI - please review and edit if needed",
+    detectedObjects: "Detected Objects",
+    locationOptional: "Location (Optional)",
+    locationPlaceholder: "Enter location or landmark",
+    submitReport: "Submit Report",
+    submittingReport: "Submitting report...",
+    
+    // Dashboard
+    dashboardTitle: "Reports Overview",
+    totalReports: "Total Reports",
+    pending: "Pending",
+    inProgress: "In Progress",
+    resolved: "Resolved",
+    searchPlaceholder: "Search by category or description...",
+    all: "All",
+    newReport: "New Report",
+    noReportsTitle: "No reports found",
+    noReportsDesc: "Start making a difference by reporting your first civic issue",
+    reportYourFirst: "Report Your First Issue",
+    severity: "Severity",
+    status: "Status",
+    category: "Category",
+    reportedOn: "Reported on",
+    
+    // How It Works
+    howItWorksTitle: "How CivicAI Works",
+    howItWorksSubtitle: "Transforming civic engagement through intelligent technology",
+    step1Title: "Report Issue",
+    step1Desc: "Capture or upload a photo of any civic issue you encounter. Our system accepts images of potholes, garbage, broken infrastructure, and more.",
+    step2Title: "AI Analysis",
+    step2Desc: "Our advanced AI instantly analyzes your image, identifies the issue type, assesses severity, and determines priority level for faster resolution.",
+    step3Title: "Track & Resolve",
+    step3Desc: "Your report is automatically routed to the appropriate authorities. Track progress in real-time and see the impact of your contribution.",
+    technologyTitle: "Powered by Advanced AI",
+    computerVisionTitle: "Computer Vision",
+    computerVisionDesc: "Deep learning models trained on thousands of civic issues for accurate identification",
+    smartRoutingTitle: "Smart Routing",
+    smartRoutingDesc: "Automatic categorization and priority assignment for efficient handling",
+    priorityIntelTitle: "Priority Intelligence",
+    priorityIntelDesc: "Severity assessment ensures critical issues get immediate attention",
+    dataSecurityTitle: "Data Security",
+    dataSecurityDesc: "End-to-end encryption and privacy protection for all submissions",
+    getStartedTitle: "Ready to Make a Difference?",
+    getStartedDesc: "Join the movement to build cleaner, safer communities across India",
+  },
+  hi: {
+    // Navigation
+    home: "होम",
+    howItWorks: "कैसे काम करता है",
+    reportIssue: "समस्या रिपोर्ट करें",
+    viewDashboard: "डैशबोर्ड देखें",
+    
+    // Hero Section
+    heroTitle: "स्वच्छ भारत Clean India",
+    heroSubtitle: "नागरिकों को सशक्त बनाना, शहरों को बदलना",
+    heroDescription: "आपकी आवाज़ मायने रखती है। तेज़ समाधान और स्वच्छ, बेहतर भारत के लिए AI-संचालित विश्लेषण के साथ नागरिक समस्याओं की रिपोर्ट करें।",
+    activeCitizens: "सक्रिय नागरिक",
+    issuesResolved: "समस्याएं हल की गईं",
+    
+    // Features
+    featuresTitle: "हम समुदायों को कैसे बदलते हैं",
+    aiPoweredTitle: "AI-संचालित",
+    aiPoweredDesc: "उन्नत AI तुरंत आपकी नागरिक रिपोर्ट का विश्लेषण और वर्गीकरण करता है",
+    fastResolutionTitle: "तेज़ समाधान",
+    fastResolutionDesc: "स्मार्ट रूटिंग सुनिश्चित करती है कि समस्याएं जल्दी सही अधिकारियों तक पहुंचें",
+    communityFirstTitle: "समुदाय पहले",
+    communityFirstDesc: "प्रगति को ट्रैक करें और अपने पड़ोस में वास्तविक प्रभाव देखें",
+    learnHowItWorks: "जानें कैसे काम करता है",
+    
+    // Impact Stats
+    impactTitle: "वास्तविक प्रभाव, वास्तविक संख्या",
+    aiAccuracy: "AI सटीकता दर",
+    fasterResolution: "तेज़ समाधान",
+    alwaysAvailable: "हमेशा उपलब्ध",
+    
+    // CTA
+    ctaTitle: "बेहतर भारत बनाने के लिए तैयार हैं?",
+    ctaDescription: "हजारों नागरिकों में शामिल हों जो फर्क ला रहे हैं। समस्याओं की रिपोर्ट करें, प्रगति को ट्रैक करें, और अपने समुदाय में वास्तविक बदलाव देखें।",
+    
+    // Report Page
+    reportTitle: "नागरिक समस्या रिपोर्ट करें",
+    capturePhoto: "फोटो कैप्चर करें",
+    aiAnalysis: "AI विश्लेषण",
+    confirmSubmit: "पुष्टि करें और जमा करें",
+    uploadPhoto: "फोटो अपलोड करें",
+    dragDropPhoto: "एक छवि खींचें और छोड़ें, या चुनने के लिए क्लिक करें",
+    analyzing: "छवि का विश्लेषण कर रहे हैं...",
+    reanalyze: "छवि का पुन: विश्लेषण करें",
+    invalidImageWarning: "अमान्य नागरिक समस्या फोटो",
+    description: "विवरण",
+    descriptionPlaceholder: "नागरिक समस्या का विस्तार से वर्णन करें...",
+    autoFilledByAI: "AI द्वारा स्वतः भरा गया - कृपया समीक्षा करें और आवश्यकता हो तो संपादित करें",
+    detectedObjects: "पहचानी गई वस्तुएं",
+    locationOptional: "स्थान (वैकल्पिक)",
+    locationPlaceholder: "स्थान या लैंडमार्क दर्ज करें",
+    submitReport: "रिपोर्ट जमा करें",
+    submittingReport: "रिपोर्ट जमा कर रहे हैं...",
+    
+    // Dashboard
+    dashboardTitle: "रिपोर्ट अवलोकन",
+    totalReports: "कुल रिपोर्ट",
+    pending: "लंबित",
+    inProgress: "प्रगति में",
+    resolved: "हल हो गया",
+    searchPlaceholder: "श्रेणी या विवरण से खोजें...",
+    all: "सभी",
+    newReport: "नई रिपोर्ट",
+    noReportsTitle: "कोई रिपोर्ट नहीं मिली",
+    noReportsDesc: "अपनी पहली नागरिक समस्या की रिपोर्ट करके फर्क लाना शुरू करें",
+    reportYourFirst: "अपनी पहली समस्या रिपोर्ट करें",
+    severity: "गंभीरता",
+    status: "स्थिति",
+    category: "श्रेणी",
+    reportedOn: "रिपोर्ट की तारीख",
+    
+    // How It Works
+    howItWorksTitle: "CivicAI कैसे काम करता है",
+    howItWorksSubtitle: "बुद्धिमान तकनीक के माध्यम से नागरिक भागीदारी में बदलाव",
+    step1Title: "समस्या रिपोर्ट करें",
+    step1Desc: "किसी भी नागरिक समस्या की फोटो कैप्चर या अपलोड करें। हमारा सिस्टम गड्ढों, कचरे, टूटे बुनियादी ढांचे और अधिक की छवियां स्वीकार करता है।",
+    step2Title: "AI विश्लेषण",
+    step2Desc: "हमारा उन्नत AI तुरंत आपकी छवि का विश्लेषण करता है, समस्या के प्रकार की पहचान करता है, गंभीरता का आकलन करता है, और तेज़ समाधान के लिए प्राथमिकता स्तर निर्धारित करता है।",
+    step3Title: "ट्रैक करें और हल करें",
+    step3Desc: "आपकी रिपोर्ट स्वचालित रूप से उपयुक्त अधिकारियों को भेज दी जाती है। वास्तविक समय में प्रगति को ट्रैक करें और अपने योगदान के प्रभाव को देखें।",
+    technologyTitle: "उन्नत AI द्वारा संचालित",
+    computerVisionTitle: "कंप्यूटर विज़न",
+    computerVisionDesc: "सटीक पहचान के लिए हजारों नागरिक समस्याओं पर प्रशिक्षित गहन शिक्षण मॉडल",
+    smartRoutingTitle: "स्मार्ट रूटिंग",
+    smartRoutingDesc: "कुशल संचालन के लिए स्वचालित वर्गीकरण और प्राथमिकता असाइनमेंट",
+    priorityIntelTitle: "प्राथमिकता बुद्धि",
+    priorityIntelDesc: "गंभीरता का आकलन सुनिश्चित करता है कि महत्वपूर्ण समस्याओं को तत्काल ध्यान मिले",
+    dataSecurityTitle: "डेटा सुरक्षा",
+    dataSecurityDesc: "सभी सबमिशन के लिए एंड-टू-एंड एन्क्रिप्शन और गोपनीयता सुरक्षा",
+    getStartedTitle: "फर्क लाने के लिए तैयार हैं?",
+    getStartedDesc: "पूरे भारत में स्वच्छ, सुरक्षित समुदाय बनाने के आंदोलन में शामिल हों",
+  },
+};
+
+export const getTranslation = (lang: string, key: string): string => {
+  return translations[lang]?.[key] || translations.en[key] || key;
+};

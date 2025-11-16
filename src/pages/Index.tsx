@@ -5,8 +5,10 @@ import { FileText, TrendingUp, Landmark, Users, Target, Award, Sparkles, ArrowRi
 import heroBg from "@/assets/hero-bg.jpg";
 import accentBg from "@/assets/accent-bg.jpg";
 import { Navigation } from "@/components/Navigation";
+import { useTranslation } from "@/hooks/use-translation";
 
 const Index = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -31,27 +33,25 @@ const Index = () => {
                 Digital India Initiative
               </div>
               <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight drop-shadow-lg">
-                स्वच्छ भारत
-                <span className="block bg-gradient-to-r from-warning to-accent bg-clip-text text-transparent mt-2">Clean India</span>
+                {t("heroTitle")}
                 <span className="block text-2xl md:text-3xl font-normal mt-4 text-foreground">
-                  Empowering Citizens, Transforming Cities
+                  {t("heroSubtitle")}
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-foreground/90 mb-8 max-w-2xl leading-relaxed drop-shadow">
-                Report civic issues instantly with AI-powered analysis. Join millions of citizens 
-                building a smarter, cleaner India.
+                {t("heroDescription")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" className="text-lg px-8 py-6 bg-warning text-warning-foreground shadow-2xl hover:scale-105 transition-transform hover:shadow-warning/50">
                   <Link to="/report">
                     <FileText className="mr-2 w-5 h-5" />
-                    Report Issue
+                    {t("reportIssue")}
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 border-2 shadow-2xl hover:scale-105 transition-transform">
                   <Link to="/dashboard">
                     <TrendingUp className="mr-2 w-5 h-5" />
-                    View Dashboard
+                    {t("viewDashboard")}
                   </Link>
                 </Button>
               </div>
@@ -63,7 +63,7 @@ const Index = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-warning" />
-                    Active Citizens
+                    {t("activeCitizens")}
                   </CardTitle>
                   <div className="text-4xl font-bold bg-gradient-to-r from-warning to-accent bg-clip-text text-transparent">10L+</div>
                   <CardDescription>
@@ -75,7 +75,7 @@ const Index = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2">
                     <Target className="w-5 h-5 text-accent" />
-                    Issues Resolved
+                    {t("issuesResolved")}
                   </CardTitle>
                   <div className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">5L+</div>
                   <CardDescription>
@@ -98,7 +98,7 @@ const Index = () => {
             <div className="inline-block bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-semibold mb-4">
               WHY CHOOSE CIVICAI
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Built for Modern India</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t("featuresTitle")}</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Experience the future of civic engagement with cutting-edge technology
             </p>
@@ -110,9 +110,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
                   <Sparkles className="w-8 h-8 text-primary-foreground" />
                 </div>
-                <CardTitle className="text-2xl mb-3">AI-Powered</CardTitle>
+                <CardTitle className="text-2xl mb-3">{t("aiPoweredTitle")}</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  Advanced machine learning analyzes every report instantly, ensuring accurate categorization and smart routing.
+                  {t("aiPoweredDesc")}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -122,9 +122,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-accent to-accent/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
                   <Award className="w-8 h-8 text-accent-foreground" />
                 </div>
-                <CardTitle className="text-2xl mb-3">Fast Resolution</CardTitle>
+                <CardTitle className="text-2xl mb-3">{t("fastResolutionTitle")}</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  Issues get resolved 3x faster with automated department routing and priority-based workflows.
+                  {t("fastResolutionDesc")}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -134,9 +134,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-warning to-warning/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
                   <Users className="w-8 h-8 text-warning-foreground" />
                 </div>
-                <CardTitle className="text-2xl mb-3">Community First</CardTitle>
+                <CardTitle className="text-2xl mb-3">{t("communityFirstTitle")}</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
-                  Built by Indians, for Indians. Join millions making their communities cleaner and safer every day.
+                  {t("communityFirstDesc")}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -145,7 +145,7 @@ const Index = () => {
           <div className="text-center">
             <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6">
               <Link to="/how-it-works">
-                Learn How It Works
+                {t("learnHowItWorks")}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
