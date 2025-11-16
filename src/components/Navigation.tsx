@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Flag, Home, FileText, LayoutDashboard, Info } from "lucide-react";
+import { Flag, Home, FileText, LayoutDashboard, Info, Map as MapIcon } from "lucide-react";
 import { LanguageSelector } from "./LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getTranslation } from "@/lib/translations";
@@ -61,6 +61,15 @@ export const Navigation = () => {
               <Link to="/dashboard">
                 <LayoutDashboard className="w-4 h-4 mr-2" />
                 {t("viewDashboard")}
+              </Link>
+            </Button>
+            <Button 
+              variant={isActive("/map") ? "default" : "ghost"} 
+              asChild
+            >
+              <Link to="/map">
+                <MapIcon className="w-4 h-4 mr-2" />
+                {t("mapView")}
               </Link>
             </Button>
             <LanguageSelector />
