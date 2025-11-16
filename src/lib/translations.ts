@@ -5,6 +5,7 @@ export const translations: Record<string, Record<string, string>> = {
     howItWorks: "How It Works",
     reportIssue: "Report Issue",
     viewDashboard: "View Dashboard",
+    mapView: "Map View",
     
     // Hero Section
     heroTitle: "स्वच्छ भारत Clean India",
@@ -51,6 +52,10 @@ export const translations: Record<string, Record<string, string>> = {
     locationPlaceholder: "Enter location or landmark",
     submitReport: "Submit Report",
     submittingReport: "Submitting report...",
+    getCurrentLocation: "Get Current Location",
+    gettingLocation: "Getting location...",
+    locationCaptured: "Location captured successfully",
+    locationError: "Could not get location",
     
     // Dashboard
     dashboardTitle: "Reports Overview",
@@ -68,6 +73,26 @@ export const translations: Record<string, Record<string, string>> = {
     status: "Status",
     category: "Category",
     reportedOn: "Reported on",
+    loadingDashboard: "Loading dashboard...",
+    filterBy: "Filter by",
+    
+    // Map View
+    mapTitle: "Civic Issues Map",
+    mapSubtitle: "Explore reported issues across your city",
+    filterByCategory: "Filter by Category",
+    filterBySeverity: "Filter by Severity",
+    allCategories: "All Categories",
+    allSeverities: "All Severities",
+    critical: "Critical",
+    moderate: "Moderate",
+    minor: "Minor",
+    showRouteToIssue: "Show Route",
+    issueDetails: "Issue Details",
+    reportedBy: "Reported by",
+    viewDetails: "View Details",
+    loadingMap: "Loading map...",
+    noIssuesOnMap: "No issues found in this area",
+    clusterInfo: "issues in this area",
     
     // How It Works
     howItWorksTitle: "How CivicAI Works",

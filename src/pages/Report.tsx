@@ -11,6 +11,7 @@ import { Loader2, Upload, MapPin, Camera, FileText, Zap, AlertCircle } from "luc
 import { Badge } from "@/components/ui/badge";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { Navigation } from "@/components/Navigation";
+import { useTranslation } from "@/hooks/use-translation";
 import subpageBg from "@/assets/subpage-bg.jpg";
 
 interface AnalysisResult {
@@ -29,10 +30,13 @@ interface AnalysisResult {
 }
 
 const Report = () => {
+  const { t } = useTranslation();
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
+  const [locationCoords, setLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -54,11 +58,48 @@ const Report = () => {
       
       // Auto-analyze the image immediately
       toast({
-        title: "Processing Image",
-        description: "AI is analyzing your photo...",
+        title: t("analyzing"),
+        description: t("analyzing"),
       });
       await analyzeImage(file);
     }
+  };
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: t("locationError"),
+        description: "Geolocation is not supported by your browser",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setLocationCoords(coords);
+        setLocation(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
+        setIsGettingLocation(false);
+        toast({
+          title: t("locationCaptured"),
+          description: "GPS coordinates captured successfully",
+        });
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        setIsGettingLocation(false);
+        toast({
+          title: t("locationError"),
+          description: "Could not retrieve your location. Please enter manually.",
+          variant: "destructive",
+        });
+      }
+    );
   };
 
   const analyzeImage = async (imageFile: File) => {
@@ -79,11 +120,17 @@ const Report = () => {
         .getPublicUrl(fileName);
 
       // Call AI analysis
+      const locationData = locationCoords
+        ? { ...locationCoords, address: location }
+        : location
+        ? { address: location }
+        : null;
+
       const { data, error } = await supabase.functions.invoke("analyze-civic-issue", {
         body: {
           imageUrl: publicUrl,
           description: description || null,
-          locationData: location ? { address: location } : null,
+          locationData,
         },
       });
 
@@ -108,8 +155,8 @@ const Report = () => {
         }
         
         toast({
-          title: "Analysis Complete",
-          description: `Detected: ${data.issue_category}. Please confirm details.`,
+          title: t("aiAnalysis"),
+          description: `${t("detectedObjects")}: ${data.issue_category}`,
         });
       }
     } catch (error) {
@@ -181,11 +228,17 @@ const Report = () => {
         imageUrl = publicUrl;
       }
 
+      const locationData = locationCoords
+        ? { ...locationCoords, address: location }
+        : location
+        ? { address: location }
+        : null;
+
       const { error: insertError } = await supabase.from("civic_reports").insert({
         user_id: user.id,
         image_url: imageUrl,
         user_description: description,
-        location_data: location ? { address: location } : null,
+        location_data: locationData,
         issue_category: analysisResult.issue_category,
         severity: analysisResult.severity,
         priority_level: analysisResult.priority_level,
@@ -200,8 +253,8 @@ const Report = () => {
       if (insertError) throw insertError;
 
       toast({
-        title: "Report Saved",
-        description: "Your report has been submitted successfully",
+        title: t("submitReport"),
+        description: "Report submitted successfully",
       });
 
       navigate("/dashboard");
@@ -234,10 +287,10 @@ const Report = () => {
               REPORT AN ISSUE
             </div>
             <h1 className="text-5xl font-bold text-foreground mb-4">
-              Make Your Voice Heard
+              {t("reportTitle")}
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Report civic issues instantly. Our AI will analyze and route your report automatically.
+              {t("heroDescription")}
             </p>
           </div>
 
@@ -250,8 +303,8 @@ const Report = () => {
                     <Camera className={`w-5 h-5 ${!analysisResult ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
                   </div>
                   <div>
-                    <h3 className={`font-semibold ${!analysisResult ? '' : 'text-muted-foreground'}`}>1. Capture</h3>
-                    <p className="text-sm text-muted-foreground">Upload photo</p>
+                    <h3 className={`font-semibold ${!analysisResult ? '' : 'text-muted-foreground'}`}>1. {t("capturePhoto")}</h3>
+                    <p className="text-sm text-muted-foreground">{t("uploadPhoto")}</p>
                   </div>
                 </div>
               </CardContent>
@@ -263,8 +316,8 @@ const Report = () => {
                     <Zap className={`w-5 h-5 ${isAnalyzing ? 'text-primary-foreground animate-pulse' : 'text-muted-foreground'}`} />
                   </div>
                   <div>
-                    <h3 className={`font-semibold ${isAnalyzing ? '' : 'text-muted-foreground'}`}>2. AI Analysis</h3>
-                    <p className="text-sm text-muted-foreground">{isAnalyzing ? 'Processing...' : 'Auto-detect issue'}</p>
+                    <h3 className={`font-semibold ${isAnalyzing ? '' : 'text-muted-foreground'}`}>2. {t("aiAnalysis")}</h3>
+                    <p className="text-sm text-muted-foreground">{isAnalyzing ? t("analyzing") : t("aiAnalysis")}</p>
                   </div>
                 </div>
               </CardContent>
@@ -276,8 +329,8 @@ const Report = () => {
                     <FileText className={`w-5 h-5 ${analysisResult?.is_valid_civic_issue ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
                   </div>
                   <div>
-                    <h3 className={`font-semibold ${analysisResult?.is_valid_civic_issue ? '' : 'text-muted-foreground'}`}>3. Confirm</h3>
-                    <p className="text-sm text-muted-foreground">Review & submit</p>
+                    <h3 className={`font-semibold ${analysisResult?.is_valid_civic_issue ? '' : 'text-muted-foreground'}`}>3. {t("confirmSubmit")}</h3>
+                    <p className="text-sm text-muted-foreground">{t("submitReport")}</p>
                   </div>
                 </div>
               </CardContent>
@@ -291,9 +344,9 @@ const Report = () => {
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-destructive mb-1">Invalid Civic Issue Photo</h3>
+                    <h3 className="font-semibold text-destructive mb-1">{t("invalidImageWarning")}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {analysisResult?.validation_message || "This photo does not appear to show a valid civic issue. Please upload a relevant image showing infrastructure problems, waste, damage, or other civic concerns."}
+                      {analysisResult?.validation_message || t("invalidImageWarning")}
                     </p>
                   </div>
                 </div>
@@ -305,17 +358,17 @@ const Report = () => {
             <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
               <CardTitle className="text-3xl flex items-center gap-3">
                 <Camera className="w-8 h-8 text-primary" />
-                Issue Details
+                {t("reportTitle")}
               </CardTitle>
               <CardDescription className="text-base">
-                Provide as much information as possible for accurate AI analysis
+                {t("dragDropPhoto")}
               </CardDescription>
             </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div>
               <Label htmlFor="image" className="text-base font-semibold flex items-center gap-2">
                 <Camera className="w-4 h-4" />
-                Issue Photo (Optional)
+                {t("uploadPhoto")}
               </Label>
               <p className="text-sm text-muted-foreground mt-1 mb-2">
                 A clear photo helps AI analyze the issue more accurately
