@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,12 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Upload, MapPin, Camera, FileText, Zap, AlertCircle } from "lucide-react";
+import { Loader2, Upload, MapPin, Camera, FileText, Zap, AlertCircle, Locate } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { Navigation } from "@/components/Navigation";
 import { useTranslation } from "@/hooks/use-translation";
 import reportPortalBg from "@/assets/report-portal-bg.jpg";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 interface AnalysisResult {
   is_valid_civic_issue: boolean;
@@ -44,6 +46,55 @@ const Report = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Map refs
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markerRef = useRef<maplibregl.Marker | null>(null);
+
+  // Initialize map
+  useEffect(() => {
+    if (mapContainerRef.current && !mapRef.current) {
+      const map = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: "https://demotiles.maplibre.org/style.json",
+        center: [78.14, 11.65],
+        zoom: 12,
+      });
+
+      map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+      // Handle map click to select location
+      map.on("click", (e) => {
+        const { lng, lat } = e.lngLat;
+        setLocationCoords({ lat, lng });
+        setLocation(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+
+        // Update or create marker
+        if (markerRef.current) {
+          markerRef.current.setLngLat([lng, lat]);
+        } else {
+          markerRef.current = new maplibregl.Marker({ color: "#F58220" })
+            .setLngLat([lng, lat])
+            .addTo(map);
+        }
+
+        toast({
+          title: t("locationCaptured"),
+          description: `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        });
+      });
+
+      mapRef.current = map;
+    }
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -56,7 +107,6 @@ const Report = () => {
       };
       reader.readAsDataURL(file);
       
-      // Auto-analyze the image immediately
       toast({
         title: t("analyzing"),
         description: t("analyzing"),
@@ -85,6 +135,23 @@ const Report = () => {
         setLocationCoords(coords);
         setLocation(`${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`);
         setIsGettingLocation(false);
+
+        // Update map view and marker
+        if (mapRef.current) {
+          mapRef.current.flyTo({
+            center: [coords.lng, coords.lat],
+            zoom: 15,
+          });
+
+          if (markerRef.current) {
+            markerRef.current.setLngLat([coords.lng, coords.lat]);
+          } else {
+            markerRef.current = new maplibregl.Marker({ color: "#F58220" })
+              .setLngLat([coords.lng, coords.lat])
+              .addTo(mapRef.current);
+          }
+        }
+
         toast({
           title: t("locationCaptured"),
           description: "GPS coordinates captured successfully",
@@ -95,7 +162,7 @@ const Report = () => {
         setIsGettingLocation(false);
         toast({
           title: t("locationError"),
-          description: "Could not retrieve your location. Please enter manually.",
+          description: "Could not retrieve your location. Please click on the map.",
           variant: "destructive",
         });
       }
@@ -106,7 +173,6 @@ const Report = () => {
     setIsAnalyzing(true);
     
     try {
-      // Upload image first
       const fileExt = imageFile.name.split(".").pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -119,7 +185,6 @@ const Report = () => {
         .from("civic-reports")
         .getPublicUrl(fileName);
 
-      // Call AI analysis
       const locationData = locationCoords
         ? { ...locationCoords, address: location }
         : location
@@ -136,7 +201,6 @@ const Report = () => {
 
       if (error) throw error;
 
-      // Check if it's a valid civic issue
       if (!data.is_valid_civic_issue) {
         setIsInvalidImage(true);
         toast({
@@ -149,7 +213,6 @@ const Report = () => {
         setIsInvalidImage(false);
         setAnalysisResult(data);
         
-        // Auto-fill description if empty
         if (!description && data.short_description) {
           setDescription(data.short_description);
         }
@@ -436,25 +499,54 @@ const Report = () => {
               )}
             </div>
 
+            {/* Location Section with Map */}
             <div>
-              <Label htmlFor="location" className="text-base font-semibold flex items-center gap-2">
+              <Label className="text-base font-semibold flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                Location (Optional)
+                Location (Click on map or use current location)
               </Label>
               <p className="text-sm text-muted-foreground mt-1 mb-2">
-                Help us locate the issue for faster resolution
+                Click on the map to select location or use the button to get your current location
               </p>
-              <div className="relative mt-2">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              
+              <div className="flex gap-2 mb-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={getCurrentLocation}
+                  disabled={isGettingLocation || isAnalyzing}
+                  className="flex-shrink-0"
+                >
+                  {isGettingLocation ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Locate className="w-4 h-4 mr-2" />
+                  )}
+                  Use Current Location
+                </Button>
                 <Input
                   id="location"
-                  placeholder="Enter address or landmark"
+                  placeholder="Coordinates will appear here..."
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   disabled={isAnalyzing}
-                  className="pl-10"
+                  className="flex-1"
                 />
               </div>
+
+              {/* MapLibre Map */}
+              <Card className="overflow-hidden">
+                <div
+                  ref={mapContainerRef}
+                  className="w-full h-[300px]"
+                  style={{ minHeight: "300px" }}
+                />
+              </Card>
+              {locationCoords && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Selected: Lat {locationCoords.lat.toFixed(6)}, Lng {locationCoords.lng.toFixed(6)}
+                </p>
+              )}
             </div>
 
             {analysisResult && !analysisResult.is_valid_civic_issue && (
