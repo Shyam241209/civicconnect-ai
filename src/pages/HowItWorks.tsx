@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, TrendingUp, FileText, Camera, Brain, Zap, Shield, Users, ChevronRight } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
-import accentBg from "@/assets/accent-bg.jpg";
+import digitalGovernanceBg from "@/assets/digital-governance-bg.jpg";
 
 const HowItWorks = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="absolute inset-0">
-        <img src={accentBg} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-background/90 backdrop-blur-sm" />
+        <img src={digitalGovernanceBg} alt="Digital Governance Background" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
       </div>
       <div className="relative z-10">
         <Navigation />
@@ -34,7 +34,7 @@ const HowItWorks = () => {
         <section className="max-w-7xl mx-auto mb-20">
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Step 1 */}
-            <Card className="relative overflow-hidden border-2 hover:border-primary hover:shadow-2xl transition-all duration-300 group">
+            <Card className="relative overflow-hidden border-2 hover:border-primary hover:shadow-2xl transition-all duration-300 group bg-card/95 backdrop-blur-sm">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] group-hover:scale-150 transition-transform duration-500" />
               <CardHeader className="pb-8 relative z-10">
                 <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
@@ -67,7 +67,7 @@ const HowItWorks = () => {
             </Card>
 
             {/* Step 2 */}
-            <Card className="relative overflow-hidden border-2 hover:border-accent hover:shadow-2xl transition-all duration-300 group">
+            <Card className="relative overflow-hidden border-2 hover:border-accent hover:shadow-2xl transition-all duration-300 group bg-card/95 backdrop-blur-sm">
               <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-bl-[100px] group-hover:scale-150 transition-transform duration-500" />
               <CardHeader className="pb-8 relative z-10">
                 <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
@@ -100,7 +100,7 @@ const HowItWorks = () => {
             </Card>
 
             {/* Step 3 */}
-            <Card className="relative overflow-hidden border-2 hover:border-warning hover:shadow-2xl transition-all duration-300 group">
+            <Card className="relative overflow-hidden border-2 hover:border-warning hover:shadow-2xl transition-all duration-300 group bg-card/95 backdrop-blur-sm">
               <div className="absolute top-0 right-0 w-32 h-32 bg-warning/5 rounded-bl-[100px] group-hover:scale-150 transition-transform duration-500" />
               <CardHeader className="pb-8 relative z-10">
                 <div className="w-20 h-20 bg-gradient-to-br from-warning to-warning/60 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg">
@@ -136,7 +136,7 @@ const HowItWorks = () => {
 
         {/* Technology Section */}
         <section className="max-w-6xl mx-auto mb-20">
-          <Card className="border-2 bg-gradient-to-br from-card via-primary/5 to-accent/5">
+          <Card className="border-2 bg-card/95 backdrop-blur-sm">
             <CardHeader className="text-center pb-12">
               <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-4 mx-auto">
                 POWERED BY AI
@@ -207,7 +207,7 @@ const HowItWorks = () => {
 
         {/* CTA Section */}
         <section className="max-w-4xl mx-auto text-center">
-          <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-accent/5 overflow-hidden">
+          <Card className="border-2 border-primary/20 bg-card/95 backdrop-blur-sm overflow-hidden">
             <CardContent className="p-12">
               <h2 className="text-4xl font-bold mb-6">Ready to Get Started?</h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">

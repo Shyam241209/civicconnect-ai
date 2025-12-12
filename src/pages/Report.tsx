@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { Navigation } from "@/components/Navigation";
 import { useTranslation } from "@/hooks/use-translation";
-import subpageBg from "@/assets/subpage-bg.jpg";
+import reportPortalBg from "@/assets/report-portal-bg.jpg";
 
 interface AnalysisResult {
   is_valid_civic_issue: boolean;
@@ -273,8 +273,8 @@ const Report = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="absolute inset-0">
-        <img src={subpageBg} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+        <img src={reportPortalBg} alt="Report Portal Background" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
       </div>
       <div className="relative z-10">
         <Navigation />
