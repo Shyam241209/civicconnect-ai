@@ -8,12 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, MapPin, Navigation2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import subpageBg from "@/assets/subpage-bg.jpg";
-
-// Use a public token for demo - in production, this should be in environment variables
-mapboxgl.accessToken = "pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNscHh5eHB4YjBhOGkya3BicjRlaDdkNWEifQ.VZ8YvVz9z9Z7QqQd_4XKYA";
 
 interface CivicIssue {
   id: string;
@@ -34,8 +31,8 @@ const Map = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
   
   const [issues, setIssues] = useState<CivicIssue[]>([]);
   const [filteredIssues, setFilteredIssues] = useState<CivicIssue[]>([]);
@@ -91,7 +88,6 @@ const Map = () => {
 
       if (error) throw error;
 
-      // Filter issues that have valid coordinates and cast location_data properly
       const validIssues = (data || [])
         .map((issue) => ({
           ...issue,
@@ -121,14 +117,14 @@ const Map = () => {
   const initializeMap = () => {
     if (!mapContainerRef.current) return;
 
-    const map = new mapboxgl.Map({
+    const map = new maplibregl.Map({
       container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/streets-v12",
-      center: [78.9629, 20.5937], // Center of India
-      zoom: 4,
+      style: "https://demotiles.maplibre.org/style.json",
+      center: [78.14, 11.65],
+      zoom: 5,
     });
 
-    map.addControl(new mapboxgl.NavigationControl(), "top-right");
+    map.addControl(new maplibregl.NavigationControl(), "top-right");
     mapRef.current = map;
   };
 
@@ -147,13 +143,11 @@ const Map = () => {
   };
 
   const updateMarkers = () => {
-    // Clear existing markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
     if (!mapRef.current) return;
 
-    // Add new markers
     filteredIssues.forEach((issue) => {
       if (!issue.location_data?.lat || !issue.location_data?.lng) return;
 
@@ -165,11 +159,9 @@ const Map = () => {
       el.style.cursor = "pointer";
       el.style.border = "3px solid white";
       el.style.boxShadow = "0 2px 4px rgba(0,0,0,0.3)";
-      
-      // Color based on severity
       el.style.backgroundColor = getSeverityColor(issue.severity);
 
-      const marker = new mapboxgl.Marker(el)
+      const marker = new maplibregl.Marker({ element: el })
         .setLngLat([issue.location_data.lng, issue.location_data.lat])
         .addTo(mapRef.current!);
 
@@ -184,9 +176,8 @@ const Map = () => {
       markersRef.current.push(marker);
     });
 
-    // Fit map to markers if there are any
     if (filteredIssues.length > 0) {
-      const bounds = new mapboxgl.LngLatBounds();
+      const bounds = new maplibregl.LngLatBounds();
       filteredIssues.forEach((issue) => {
         if (issue.location_data?.lat && issue.location_data?.lng) {
           bounds.extend([issue.location_data.lng, issue.location_data.lat]);
@@ -223,7 +214,7 @@ const Map = () => {
   };
 
   const showRouteToIssue = async (issue: CivicIssue) => {
-    if (!userLocation || !mapRef.current) {
+    if (!userLocation) {
       toast({
         title: "Location Required",
         description: "Please enable location services to view route",
@@ -234,65 +225,9 @@ const Map = () => {
 
     if (!issue.location_data?.lat || !issue.location_data?.lng) return;
 
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${userLocation.lng},${userLocation.lat};${issue.location_data.lng},${issue.location_data.lat}?geometries=geojson&access_token=${mapboxgl.accessToken}`
-      );
-
-      const data = await response.json();
-
-      if (data.routes && data.routes.length > 0) {
-        const route = data.routes[0].geometry;
-
-        // Remove existing route layer if present
-        if (mapRef.current.getLayer("route")) {
-          mapRef.current.removeLayer("route");
-          mapRef.current.removeSource("route");
-        }
-
-        // Add route to map
-        mapRef.current.addLayer({
-          id: "route",
-          type: "line",
-          source: {
-            type: "geojson",
-            data: {
-              type: "Feature",
-              properties: {},
-              geometry: route,
-            },
-          },
-          layout: {
-            "line-join": "round",
-            "line-cap": "round",
-          },
-          paint: {
-            "line-color": "#3b82f6",
-            "line-width": 5,
-            "line-opacity": 0.8,
-          },
-        });
-
-        // Fit map to route
-        const bounds = new mapboxgl.LngLatBounds();
-        route.coordinates.forEach((coord: [number, number]) => {
-          bounds.extend(coord);
-        });
-        mapRef.current.fitBounds(bounds, { padding: 50 });
-
-        toast({
-          title: "Route Displayed",
-          description: `Distance: ${(data.routes[0].distance / 1000).toFixed(2)} km`,
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching route:", error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch route",
-        variant: "destructive",
-      });
-    }
+    // Open in external maps app since MapLibre doesn't have routing
+    const url = `https://www.google.com/maps/dir/${userLocation.lat},${userLocation.lng}/${issue.location_data.lat},${issue.location_data.lng}`;
+    window.open(url, "_blank");
   };
 
   const categories = [...new Set(issues.map((issue) => issue.issue_category))];
@@ -320,7 +255,6 @@ const Map = () => {
 
         <div className="pt-24 pb-12 px-4">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
             <div className="text-center mb-8">
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
                 {t("mapTitle")}
@@ -328,7 +262,6 @@ const Map = () => {
               <p className="text-xl text-muted-foreground">{t("mapSubtitle")}</p>
             </div>
 
-            {/* Filters */}
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -389,9 +322,7 @@ const Map = () => {
               </CardContent>
             </Card>
 
-            {/* Map and Details Grid */}
             <div className="grid lg:grid-cols-3 gap-6">
-              {/* Map */}
               <div className="lg:col-span-2">
                 <Card className="overflow-hidden">
                   <div
@@ -402,14 +333,13 @@ const Map = () => {
                 </Card>
               </div>
 
-              {/* Selected Issue Details */}
               <div>
                 {selectedIssue ? (
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         {t("issueDetails")}
-                        <Badge variant={getSeverityBadge(selectedIssue.severity)}>
+                        <Badge variant={getSeverityBadge(selectedIssue.severity) as any}>
                           {t(selectedIssue.severity)}
                         </Badge>
                       </CardTitle>
