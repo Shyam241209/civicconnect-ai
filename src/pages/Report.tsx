@@ -56,7 +56,7 @@ const Report = () => {
     if (mapContainerRef.current && !mapRef.current) {
       const map = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: "https://demotiles.maplibre.org/style.json",
+        style: "https://tiles.openfreemap.org/styles/bright",
         center: [78.14, 11.65],
         zoom: 12,
       });
