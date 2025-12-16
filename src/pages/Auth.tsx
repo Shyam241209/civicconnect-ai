@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import IndianCivicBackground from "@/components/IndianCivicBackground";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -101,8 +102,9 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 py-12 px-4 flex items-center justify-center">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-background via-[#004687]/5 to-[#FF9933]/5 py-12 px-4 flex items-center justify-center relative overflow-hidden">
+      <IndianCivicBackground />
+      <div className="w-full max-w-md relative z-10">
         <Button variant="ghost" asChild className="mb-6">
           <Link to="/">
             <ArrowLeft className="w-4 h-4 mr-2" />
