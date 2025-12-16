@@ -38,10 +38,10 @@ export const LanguageSelector = () => {
     <div className="flex items-center gap-2">
       <Globe className="w-4 h-4 text-muted-foreground" />
       <Select value={language} onValueChange={setLanguage}>
-        <SelectTrigger className="w-[140px] h-9 bg-background/80 backdrop-blur-sm border-border/50">
+        <SelectTrigger className="w-[140px] h-9 bg-white border-[#004687]/20 text-[#004687]">
           <SelectValue placeholder="Language" />
         </SelectTrigger>
-        <SelectContent className="max-h-[300px]">
+        <SelectContent className="max-h-[300px] bg-white border border-[#004687]/20 shadow-xl z-50">
           {INDIAN_LANGUAGES.map((lang) => (
             <SelectItem key={lang.code} value={lang.code}>
               {lang.native}
